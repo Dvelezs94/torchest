@@ -18,6 +18,7 @@ setup(
     author="Diego Velez",
     author_email="diegovelezs94@gmail.com",
     description=DESCRIPTION,
+    url = "https://github.com/Dvelezs94/torchest",
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
