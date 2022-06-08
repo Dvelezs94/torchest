@@ -13,7 +13,7 @@ DESCRIPTION = 'Toolbelt for pytorch framework'
 LONG_DESCRIPTION = 'Pytorch tools and utilities (Trainers, data generators, functions, and more...)'
 
 setup(
-    name="Torchest",
+    name="torchest",
     version=VERSION,
     author="Diego Velez",
     author_email="diegovelezs94@gmail.com",
