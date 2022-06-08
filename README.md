@@ -39,7 +39,7 @@ Training loop progress
 
 Trainer also saves the cost for the train, dev and test passes. You can simply call `trainer.plot_costs()` to display the graph with the costs
 
-![Trainer costs](images/trainer_costs.png)
+<img src="images/trainer_costs.png)" alt="Trainer costs" width="200"/>
 
 
 # Data generators
