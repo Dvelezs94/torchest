@@ -1,0 +1,5 @@
+torch
+matplotlib
+matplotlib-inline
+numpy
+tqdm
