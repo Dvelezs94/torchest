@@ -46,7 +46,7 @@ test_dataloader = DataLoader(test_data, batch_size=100)
 Visualize data
 """
 colors = ['blue', 'green', 'yellow'] # 1 color per class
-# graph_spiral(X, Y)
+graph_spiral(X, Y)
 
 """
 Build Neural Network model
