@@ -39,7 +39,7 @@ Training loop progress
 
 Trainer also saves the cost for the train, dev and test passes. You can simply call `trainer.plot_costs()` to display the graph with the costs
 
-<img src="images/trainer_costs.png)" alt="Trainer costs" width="200"/>
+<img src="images/trainer_costs.png" alt="Trainer costs" style="width: 400px; display:block; margin-left:auto; margin-right:auto"/>
 
 
 # Data generators
@@ -55,4 +55,4 @@ class_num =  3
 X, Y = spiral_datagen(450, class_num) # 450 elements per class
 ```
 
-![Spiral data screenshot](images/spiral_2d.png)
+<img src="images/spiral_2d.png" alt="Spiral data screenshot" style="width: 400px; display:block; margin-left:auto; margin-right:auto"/>
