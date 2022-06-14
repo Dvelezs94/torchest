@@ -98,7 +98,7 @@ class Trainer(ABC):
         self.model.eval()
         for batch, (item, label) in enumerate(dataloader):
             # send tensors to device
-            item, label = item.to(self.device), label.to(self.device)
+            item = item.to(self.device)
 
             with torch.no_grad():
                 x = self.model(item)
