@@ -131,6 +131,7 @@ dmypy.json
 # datasets folder
 datasets/
 data/
+wandb/
 
 # test files
 *_test.py

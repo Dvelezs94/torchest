@@ -46,7 +46,7 @@ test_dataloader = DataLoader(test_data, batch_size=100)
 Visualize data
 """
 colors = ['blue', 'green', 'yellow'] # 1 color per class
-graph_spiral(X, Y)
+# graph_spiral(X, Y)
 
 """
 Build Neural Network model
@@ -68,11 +68,11 @@ loss_fn = nn.CrossEntropyLoss()
 learning_rate= 1e-2
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-trainer = SimpleTrainer(model, loss_fn, optimizer)
+trainer = SimpleTrainer(model, loss_fn, optimizer, name="Spiral", wandb=True)
 
 """
 Train
 """
 epochs = 500
 trainer.train(data_train=train_dataloader, data_dev=dev_dataloader, data_test=test_dataloader, epochs=epochs)
-trainer.plot_costs()
+#trainer.plot_accuracy()
