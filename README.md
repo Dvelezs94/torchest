@@ -44,10 +44,6 @@ Trainer also saves the cost for the train, dev and test passes. You can simply c
 
 ## Wandb visualization
 
-Note: You must have wandb python package installed to use this feature.
-
-`pip install wandb`
-
  Trainers support [wandb](https://wandb.ai/) to visualize loss and acurracy as well as to save model versions. if you want to enable you have to set 2 parameters in your trainer initialization, `name` and `wandb`
 
  ```python
