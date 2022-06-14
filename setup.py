@@ -22,7 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=['numpy', 'matplotlib', 'tqdm', 'torch'],
+    install_requires=['numpy', 'matplotlib', 'tqdm', 'torch', 'wandb'],
     keywords=['python', 'ai', 'machine learning', 'neural network', 'pytorch', 'trainer'],
     classifiers=[
         "Development Status :: 1 - Planning",

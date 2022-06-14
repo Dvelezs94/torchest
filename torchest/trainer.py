@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 import wandb as wdb
 from tqdm import tqdm
 
-class Trainer:
+class Trainer(ABC):
     """
     Trainer superclass. All trainers should inherit from this
     and implement the train method.
@@ -30,7 +30,7 @@ class Trainer:
         auto_detect_device (optional): Wether or not to detect GPU
         device (optional): force device to use (useful when oyu have more than 1 GPU)
         name (optional): Trainer name used for wandb
-        wandb (optional): Wether or not to send metric to wandb.
+        wandb (optional): Wether or not to send metrics to wandb.
         """
         assert isinstance(model, torch.nn.Module), "NN model does not inherit from base Module class"
         assert isinstance(loss_function, torch.nn.modules.loss._Loss), "Provided loss function does not inherit from base _Loss class."
@@ -44,6 +44,8 @@ class Trainer:
         self.test_accuracy = {}
         self.name = name
         self.wandb = wandb
+        if self.wandb:
+            self.setup_wandb()
         
         if auto_detect_device and device != "":
             chosen_device = device
@@ -53,20 +55,6 @@ class Trainer:
         print(f"Trainer {self.name} using '{chosen_device}' device")
         self.device = chosen_device
 
-        if self.wandb:
-            assert self.name, "Trainer name should be set in order to use wandb"
-            model_layers = dict(self.model.named_modules())
-            model_layers.pop('')
-            optimizer_params = self.optimizer.defaults
-            optimizer_params['name'] = type(self.optimizer).__name__
-
-            wdb.init(project=self.name, config = {
-                'optimizer': optimizer_params,
-                'loss function': self.loss_function,
-                'model layers': model_layers
-            })
-            wdb.watch(self.model)
-    
     @abstractmethod
     def train(self, 
         X: torch.Tensor, 
@@ -77,6 +65,24 @@ class Trainer:
         **kwargs
     ) -> None:
         pass
+
+    def setup_wandb(self):
+        assert self.name, "Trainer name should be set in order to use wandb"
+        model_layers = dict(self.model.named_modules())
+        model_layers.pop('')
+        model_layers = list(model_layers.values())
+        optimizer_params = self.optimizer.defaults
+        optimizer_params['name'] = type(self.optimizer).__name__
+        n_trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+
+        wdb.init(project=self.name, config = {
+            'optimizer': optimizer_params,
+            'loss_function': self.loss_function,
+            'layers': model_layers,
+            'n_layers': len(model_layers),
+            'n_trainable_params': n_trainable_params
+        })
+        wdb.watch(self.model)
 
     def calculate_accuracy(self, dataloader: DataLoader) -> float:
         """
@@ -163,7 +169,6 @@ class SimpleTrainer(Trainer):
 
                     # 3. compute loss
                     loss = self.loss_function(y_pred, Y)
-                    
 
                     # 4. Compte gradients gradients
                     loss.backward()
@@ -172,6 +177,7 @@ class SimpleTrainer(Trainer):
                     self.optimizer.step()
                 
                     train_losses.append(loss.detach().item())
+
                 self.loss[epoch] = torch.tensor(train_losses).mean()
                 self.train_accuracy[epoch] = self.calculate_accuracy(data_train)
 
@@ -194,10 +200,11 @@ class SimpleTrainer(Trainer):
                 # wandb reports
                 if self.wandb:
                     wdb.log({'loss': self.loss[epoch], 
-                            'train acc': self.train_accuracy[epoch],
-                            'dev acc': self.dev_accuracy[epoch],
-                            'test acc': self.test_accuracy[epoch]})
-                
+                            'train_accuracy': self.train_accuracy[epoch],
+                            'dev_accuracy': self.dev_accuracy[epoch],
+                            'test_accuracy': self.test_accuracy[epoch]})
+                            
+                # tqdm progress bar
                 t.set_postfix(epoch_loss=f"{self.loss[epoch]:>5f}", 
                     train_acc=f"{self.train_accuracy[epoch]:.2f}%",
                     dev_acc=f"{self.dev_accuracy[epoch]:.2f}%",
