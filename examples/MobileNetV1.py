@@ -46,21 +46,35 @@ Visualiza data
 """
 Create Network graph
 """
+class DWSConv2d(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(in_channels, in_channels, 3, padding=1, groups=in_channels),
+            nn.BatchNorm2d(in_channels),
+            nn.ReLU(),
+            nn.Conv2d(in_channels, out_channels, 1),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+        )
+    
+    def forward(self, x):
+        x = self.layers(x)
+        return x
+
 cnnmodel = nn.Sequential(
-    # first convolution
-    nn.Conv2d(1, 6, 5),
-    nn.ReLU(),
-    nn.MaxPool2d(2, 2),
-    # second convolution
-    nn.Conv2d(6, 16, 5),
-    nn.ReLU(),
+    nn.Conv2d(1, 5, 3, padding=1),
+    # first depthwise-separable conv
+    DWSConv2d(5, 8),
+    # second depthwise-separable conv
+    DWSConv2d(8, 12),
     nn.MaxPool2d(2, 2),
     # flatten
     nn.Flatten(),
     # # linear layers
-    nn.Linear(256, 120),
+    nn.Linear(14 * 14 * 12, 64),
     nn.ReLU(),
-    nn.Linear(120, 10),
+    nn.Linear(64, 10),
 )
 
 """
@@ -68,7 +82,7 @@ Prepare trainer
 """
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.RMSprop(cnnmodel.parameters(), lr=1e-2)
-trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, wandb_project_name="CNN", wandb=True)
+trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, wandb_project_name="MNIST", wandb=True)
 
 """
 Train
@@ -77,7 +91,7 @@ trainer.train(data_train=train_dataloader,
             data_dev=dev_dataloader, 
             data_test=test_dataloader, epochs=20)
 
-# trainer.plot_accuracy()
+trainer.plot_accuracy()
 """
 Predict
 """
