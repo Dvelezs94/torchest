@@ -47,7 +47,7 @@ Trainer also saves the cost for the train, dev and test passes. You can simply c
  Trainers support [wandb](https://wandb.ai/) to visualize loss and acurracy as well as to save model versions. if you want to enable you have to set 2 parameters in your trainer initialization, `name` and `wandb`
 
  ```python
- trainer = SimpleTrainer(model, loss_fn, optimizer, name="MyProject", wandb=True)
+ trainer = SimpleTrainer(model, loss_fn, optimizer, wandb_project_name="MyProject", wandb=True)
  ```
 
  On the first run you will have to enter your API key, which you can obtain at https://wandb.ai/settings

@@ -11,7 +11,7 @@ from torchest.utils import plot_image_dataset
 Prepare Data
 """
 ## need to flatten because I get 28*28 vectors
-train_data = datasets.FashionMNIST(
+train_data = datasets.CIFAR10(
     root="datasets/",
     train=True,
     download=True,
@@ -20,7 +20,7 @@ train_data = datasets.FashionMNIST(
 
 classes = train_data.classes.copy()
 
-dev_test_data = datasets.FashionMNIST(
+dev_test_data = datasets.CIFAR10(
     root="datasets/",
     train=False,
     download=True,
@@ -31,7 +31,7 @@ dev_test_data_size = len(dev_test_data)
 dev_data_size = int(dev_test_data_size / 2)
 test_data_size = dev_test_data_size - dev_data_size
 dev_data, test_data = random_split(dev_test_data, [dev_data_size, test_data_size])
-batch_size = 64
+batch_size = 128
 
 # Create data loaders.
 train_dataloader = DataLoader(train_data, batch_size=batch_size)
@@ -48,27 +48,27 @@ Create Network graph
 """
 cnnmodel = nn.Sequential(
     # first convolution
-    nn.Conv2d(1, 6, 5),
+    nn.Conv2d(3, 6, 3),
     nn.ReLU(),
     nn.MaxPool2d(2, 2),
     # second convolution
-    nn.Conv2d(6, 16, 5),
+    nn.Conv2d(6, 16, 3),
     nn.ReLU(),
     nn.MaxPool2d(2, 2),
     # flatten
-    nn.Flatten(),
+    nn.Flatten(1),
     # # linear layers
-    nn.Linear(256, 120),
+    nn.Linear(576, 256),
     nn.ReLU(),
-    nn.Linear(120, 10),
+    nn.Linear(256, len(classes)),
 )
 
 """
 Prepare trainer
 """
 loss_function = nn.CrossEntropyLoss()
-optimizer = optim.RMSprop(cnnmodel.parameters(), lr=1e-2)
-trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, wandb_project_name="CNN", wandb=True)
+optimizer = optim.Adam(cnnmodel.parameters(), lr=1e-2)
+trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, wandb_project_name="CIFAR10", wandb=False)
 
 """
 Train

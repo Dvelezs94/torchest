@@ -18,7 +18,7 @@ class Trainer(ABC):
         optimizer: optim.Optimizer, 
         auto_detect_device: bool = True, 
         device: str = "",
-        name: str = "",
+        wandb_project_name: str = "",
         wandb: bool = False) -> None:
         """
         Inputs
@@ -29,8 +29,9 @@ class Trainer(ABC):
 
         auto_detect_device (optional): Wether or not to detect GPU
         device (optional): force device to use (useful when oyu have more than 1 GPU)
-        name (optional): Trainer name used for wandb
+        name (optional): Trainer name
         wandb (optional): Wether or not to send metrics to wandb.
+        wandb_project_name (optional): Project name for wandb
         """
         assert isinstance(model, torch.nn.Module), "NN model does not inherit from base Module class"
         assert isinstance(loss_function, torch.nn.modules.loss._Loss), "Provided loss function does not inherit from base _Loss class."
@@ -42,7 +43,7 @@ class Trainer(ABC):
         self.train_accuracy = {}
         self.dev_accuracy = {}
         self.test_accuracy = {}
-        self.name = name
+        self.wandb_project_name = wandb_project_name
         self.wandb = wandb
         if self.wandb:
             self.setup_wandb()
@@ -52,7 +53,7 @@ class Trainer(ABC):
         else:
             chosen_device = "cuda" if torch.cuda.is_available() else "cpu"
             
-        print(f"Trainer {self.name} using '{chosen_device}' device")
+        print(f"Trainer using '{chosen_device}' device")
         self.device = chosen_device
 
     @abstractmethod
@@ -67,7 +68,7 @@ class Trainer(ABC):
         pass
 
     def setup_wandb(self):
-        assert self.name, "Trainer name should be set in order to use wandb"
+        assert self.wandb_project_name, "wandb_project_name should be set in order to use wandb"
         model_layers = dict(self.model.named_modules())
         model_layers.pop('')
         model_layers = list(model_layers.values())
@@ -75,13 +76,14 @@ class Trainer(ABC):
         optimizer_params['name'] = type(self.optimizer).__name__
         n_trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
 
-        wdb.init(project=self.name, config = {
-            'optimizer': optimizer_params,
-            'loss_function': self.loss_function,
-            'layers': model_layers,
-            'n_layers': len(model_layers),
-            'n_trainable_params': n_trainable_params
-        })
+        wdb.init(project=self.wandb_project_name,
+            config = {
+                'optimizer': optimizer_params,
+                'loss_function': self.loss_function,
+                'layers': model_layers,
+                'n_layers': len(model_layers),
+                'n_trainable_params': n_trainable_params
+            })
         wdb.watch(self.model)
 
     def calculate_accuracy(self, dataloader: DataLoader) -> float:

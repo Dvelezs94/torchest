@@ -88,7 +88,7 @@ loss_fn = nn.CrossEntropyLoss()
 learning_rate= 1e-2
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-trainer = SimpleTrainer(model, loss_fn, optimizer, name="Spiral", wandb=True)
+trainer = SimpleTrainer(model, loss_fn, optimizer, wandb_project_name="Spiral", wandb=True)
 
 """
 Train

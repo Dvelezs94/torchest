@@ -70,7 +70,7 @@ Prepare trainer
 """
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.RMSprop(cnnmodel.parameters(), lr=1e-2)
-trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, name="LeNet5", wandb=True)
+trainer = SimpleTrainer(cnnmodel, loss_function, optimizer, wandb_project_name="FashionMNIST", wandb=True)
 
 """
 Train
